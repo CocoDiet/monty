@@ -109,7 +109,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 You will need to clone the repository of the project from Github. This will contain the Monty Interpreter program and all of its dependencies. 
 
-    https://github.com/jzamora5/monty.git
+    https://github.com/CocoDiet/monty.git
 
 After cloning the repository you will have a folder called monty. In here there will be several files that allow the program to work.
 
