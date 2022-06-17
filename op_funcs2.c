@@ -1,127 +1,146 @@
 #include "monty.h"
-
 /**
- * _add - adds the top two elements of the stack
- * @stack: Pointer to head of stack (or queue)
- * @line_number: Current line number
- *
- * Return: No Return
- */
-void _add(stack_t **stack, unsigned int line_number)
+ * f_add - adds the top two elements of the stack.
+ * @head: stack head
+ * @counter: line_number
+ * Return: no return
+*/
+void f_add(stack_t **head, unsigned int counter)
 {
-	stack_t *tmp = *stack;
-	int count = 0, tmpn;
+	stack_t *h;
+	int len = 0, aux;
 
-	while (tmp)
-		tmp = tmp->next, count++;
-	if (count < 2)
+	h = *head;
+	while (h)
 	{
-		dprintf(2, "L%d: can't add, stack too short\n", line_number);
-		exit_op();
+		h = h->next;
+		len++;
+	}
+	if (len < 2)
+	{
+		fprintf(stderr, "L%d: can't add, stack too short\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
 		exit(EXIT_FAILURE);
 	}
-
-	tmpn = (*stack)->n;
-	delete_node_index(stack, 0);
-	(*stack)->n += tmpn;
-
+	h = *head;
+	aux = h->n + h->next->n;
+	h->next->n = aux;
+	*head = h->next;
+	free(h);
 }
-/**
- * _nop - doesn’t do anything
- * @stack: Pointer to head of stack (or queue)
- * @line_number: Current line number
- *
- * Return: No Return
- */
-void _nop(stack_t **stack, unsigned int line_number)
-{
-	(void) stack;
-	(void) line_number;
-}
-/**
- * _sub -  subtracts the top element of the stack from the second
- * top element of the stack
- * @stack: Pointer to head of stack (or queue)
- * @line_number: Current line number
- *
- * Return: No Return
- */
-void _sub(stack_t **stack, unsigned int line_number)
-{
-	stack_t *tmp = *stack;
-	int count = 0, tmpn;
 
-	while (tmp)
-		tmp = tmp->next, count++;
-	if (count < 2)
+/**
+  *f_nop- nothing
+  *@head: stack head
+  *@counter: line_number
+  *Return: no return
+ */
+void f_nop(stack_t **head, unsigned int counter)
+{
+	(void) counter;
+	(void) head;
+}
+
+/**
+  *f_sub- sustration
+  *@head: stack head
+  *@counter: line_number
+  *Return: no return
+ */
+void f_sub(stack_t **head, unsigned int counter)
+{
+	stack_t *aux;
+	int sus, nodes;
+
+	aux = *head;
+	for (nodes = 0; aux != NULL; nodes++)
+		aux = aux->next;
+	if (nodes < 2)
 	{
-		dprintf(2, "L%d: can't sub, stack too short\n", line_number);
-		exit_op();
+		fprintf(stderr, "L%d: can't sub, stack too short\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
 		exit(EXIT_FAILURE);
 	}
-
-	tmpn = (*stack)->n;
-	delete_node_index(stack, 0);
-	(*stack)->n -= tmpn;
-
+	aux = *head;
+	sus = aux->next->n - aux->n;
+	aux->next->n = sus;
+	*head = aux->next;
+	free(aux);
 }
+
 /**
- * _div - divides the second top element of the stack by the top
- * element of the stack
- * @stack: Pointer to head of stack (or queue)
- * @line_number: Current line number
- *
- * Return: No Return
- */
-void _div(stack_t **stack, unsigned int line_number)
+ * f_div - divides the top two elements of the stack.
+ * @head: stack head
+ * @counter: line_number
+ * Return: no return
+*/
+void f_div(stack_t **head, unsigned int counter)
 {
-	stack_t *tmp = *stack;
-	int count = 0, tmpn;
+	stack_t *h;
+	int len = 0, aux;
 
-	while (tmp)
-		tmp = tmp->next, count++;
-	if (count < 2)
+	h = *head;
+	while (h)
 	{
-		dprintf(2, "L%d: can't div, stack too short\n", line_number);
-		exit_op();
+		h = h->next;
+		len++;
+	}
+	if (len < 2)
+	{
+		fprintf(stderr, "L%d: can't div, stack too short\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
 		exit(EXIT_FAILURE);
 	}
-
-	tmpn = (*stack)->n;
-	delete_node_index(stack, 0);
-
-	if (tmpn == 0)
+	h = *head;
+	if (h->n == 0)
 	{
-		dprintf(2, "L%d: division by zero\n", line_number);
-		exit_op();
+		fprintf(stderr, "L%d: division by zero\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
 		exit(EXIT_FAILURE);
 	}
-
-	(*stack)->n /= tmpn;
-
+	aux = h->next->n / h->n;
+	h->next->n = aux;
+	*head = h->next;
+	free(h);
 }
+
 /**
- * _mul - multiplies the second top element of the stack with the top element
- * of the stack.
- * @stack: Pointer to head of stack (or queue)
- * @line_number: Current line number
- *
- * Return: No Return
- */
-void _mul(stack_t **stack, unsigned int line_number)
+ * f_mul - multiplies the top two elements of the stack.
+ * @head: stack head
+ * @counter: line_number
+ * Return: no return
+*/
+void f_mul(stack_t **head, unsigned int counter)
 {
-	stack_t *tmp = *stack;
-	int count = 0, tmpn;
+	stack_t *h;
+	int len = 0, aux;
 
-	while (tmp)
-		tmp = tmp->next, count++;
-	if (count < 2)
+	h = *head;
+	while (h)
 	{
-		dprintf(2, "L%d: can't mul, stack too short\n", line_number);
-		exit_op();
+		h = h->next;
+		len++;
+	}
+	if (len < 2)
+	{
+		fprintf(stderr, "L%d: can't mul, stack too short\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
 		exit(EXIT_FAILURE);
 	}
-	tmpn = (*stack)->n;
-	delete_node_index(stack, 0);
-	(*stack)->n *= tmpn;
+	h = *head;
+	aux = h->next->n * h->n;
+	h->next->n = aux;
+	*head = h->next;
+	free(h);
 }
+

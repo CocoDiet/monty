@@ -1,60 +1,64 @@
+#define  _POSIX_C_SOURCE 200809L
 #include "monty.h"
-
-global_m globm;
-void set_global(void);
-
+#include <string.h>
 /**
- * main -  monty interpreter
- * @ac: command line arguments count
- * @av: command line arguments array of strings
- *
- * Return: 0 if success
- */
-int main(int ac, char **av)
+* free_stack - frees a doubly linked list
+* @head: head of the stack
+*/
+void free_stack(stack_t *head)
 {
-	char *buff = NULL, *dlim = " \n\t", *optok = NULL;
-	size_t buff_size = 0;
-	ssize_t line_size;
-	FILE *fp;
+	stack_t *aux;
 
-	if (ac != 2)
-		dprintf(2, "USAGE: monty file\n"), exit(EXIT_FAILURE);
-	fp  = fopen(av[1], "r");
-	if (!fp)
+	aux = head;
+	while (head)
 	{
-		dprintf(2, "Error: Can't open file %s\n", av[1]);
-		exit(EXIT_FAILURE);
+		aux = head->next;
+		free(head);
+		head = aux;
 	}
-	globm.fp = fp;
-	set_global();
-	line_size = getline(&buff, &buff_size, globm.fp);
-	globm.gbuff = buff;
-	while (line_size >= 0)
-	{
-		globm.line_number += 1;
-		optok = strtok(buff, dlim);
-		if (optok && optok[0] != '#')
-		{
-			globm.n = strtok(NULL, dlim);
-			get_opcode(optok);
-		}
-		line_size = getline(&buff, &buff_size, globm.fp);
-		optok = NULL, globm.n = NULL;
-	}
-	exit_op();
-	return (0);
 }
 
+bus_t bus = {NULL, NULL, NULL, 0};
 /**
- * set_global - defines global variables
- *
- * Return: No return
- */
-void set_global(void)
+* main - monty code interpreter
+* @argc: number of arguments
+* @argv: monty file location
+* Return: 0 on success
+*/
+int main(int argc, char *argv[])
 {
-	globm.mode = 0;
-	globm.gbuff = NULL;
-	globm.n = NULL;
-	globm.head = NULL;
-	globm.line_number = 0;
+	char *content;
+	FILE *file;
+	size_t size = 0;
+	ssize_t read_line = 1;
+	stack_t *stack = NULL;
+	unsigned int counter = 0;
+
+	if (argc != 2)
+	{
+		fprintf(stderr, "USAGE: monty file\n");
+		exit(EXIT_FAILURE);
+	}
+	file = fopen(argv[1], "r");
+	bus.file = file;
+	if (!file)
+	{
+		fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
+	while (read_line > 0)
+	{
+		content = NULL;
+		read_line = getline(&content, &size, file);
+		bus.content = content;
+		counter++;
+		if (read_line > 0)
+		{
+			execute(content, &stack, counter, file);
+		}
+		free(content);
+	}
+	free_stack(stack);
+	fclose(file);
+return (0);
 }

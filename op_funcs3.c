@@ -1,152 +1,149 @@
 #include "monty.h"
-
 /**
- * _mod - computes the rest of the division of the second top element of
- * the stack by the top element of the stack.
- * @stack: Pointer to head of stack (or queue)
- * @line_number: Current line number
- *
- * Return: No Return
- */
-void _mod(stack_t **stack, unsigned int line_number)
+ * f_mod - computes the rest of the division of the second
+ * top element of the stack by the top element of the stack
+ * @head: stack head
+ * @counter: line_number
+ * Return: no return
+*/
+void f_mod(stack_t **head, unsigned int counter)
 {
-	stack_t *tmp = *stack;
-	int count = 0, tmpn;
+	stack_t *h;
+	int len = 0, aux;
 
-	while (tmp)
-		tmp = tmp->next, count++;
-	if (count < 2)
+	h = *head;
+	while (h)
 	{
-		dprintf(2, "L%d: can't mod, stack too short\n", line_number);
-		exit_op();
+		h = h->next;
+		len++;
+	}
+	if (len < 2)
+	{
+		fprintf(stderr, "L%d: can't mod, stack too short\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
 		exit(EXIT_FAILURE);
 	}
-
-	tmpn = (*stack)->n;
-	delete_node_index(stack, 0);
-
-	if (tmpn == 0)
+	h = *head;
+	if (h->n == 0)
 	{
-		dprintf(2, "L%d: division by zero\n", line_number);
-		exit_op();
+		fprintf(stderr, "L%d: division by zero\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
 		exit(EXIT_FAILURE);
 	}
-
-	(*stack)->n %= tmpn;
+	aux = h->next->n % h->n;
+	h->next->n = aux;
+	*head = h->next;
+	free(h);
 }
+
 /**
- * _pchar - prints the char at the top of the stack, followed by a new line
- * @stack: Pointer to head of stack (or queue)
- * @line_number: Current line number
- *
- * Return: No Return
- */
-void _pchar(stack_t **stack, unsigned int line_number)
+ * f_pchar - prints the char at the top of the stack,
+ * followed by a new line
+ * @head: stack head
+ * @counter: line_number
+ * Return: no return
+*/
+void f_pchar(stack_t **head, unsigned int counter)
 {
-	stack_t *tmp = *stack;
-	int chr;
+	stack_t *h;
 
-	if (!stack || !(*stack))
+	h = *head;
+	if (!h)
 	{
-		dprintf(2, "L%d: can't pchar, stack empty\n", line_number);
-		exit_op();
+		fprintf(stderr, "L%d: can't pchar, stack empty\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
 		exit(EXIT_FAILURE);
 	}
-
-	chr = tmp->n;
-	if (chr < 32 || chr > 126)
+	if (h->n > 127 || h->n < 0)
 	{
-		dprintf(2, "L%d: can't pchar, value out of range\n", line_number);
-		exit_op();
+		fprintf(stderr, "L%d: can't pchar, value out of range\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
 		exit(EXIT_FAILURE);
 	}
-
-	printf("%c\n", tmp->n);
-
+	printf("%c\n", h->n);
 }
-/**
- * _pstr - prints the string starting at the top of the stack, followed
- * by a new line
- * top element of the stack
- * @stack: Pointer to head of stack (or queue)
- * @line_number: Current line number
- *
- * Return: No Return
- */
-void _pstr(stack_t **stack, unsigned int line_number)
-{
-	stack_t *tmp = *stack;
-	int chr;
 
-	(void) line_number;
-	while (stack && tmp)
+/**
+ * f_pstr - prints the string starting at the top of the stack,
+ * followed by a new
+ * @head: stack head
+ * @counter: line_number
+ * Return: no return
+*/
+void f_pstr(stack_t **head, unsigned int counter)
+{
+	stack_t *h;
+	(void)counter;
+
+	h = *head;
+	while (h)
 	{
-		chr = tmp->n;
-		if (chr < 1 || chr > 127)
+		if (h->n > 127 || h->n <= 0)
+		{
 			break;
-		printf("%c", chr);
-		tmp = tmp->next;
+		}
+		printf("%c", h->n);
+		h = h->next;
 	}
 	printf("\n");
-
 }
+
 /**
- * _rotl - rotates the stack to the top
- * element of the stack
- * @stack: Pointer to head of stack (or queue)
- * @line_number: Current line number
- *
- * Return: No Return
+  *f_rotl- rotates the stack to the top
+  *@head: stack head
+  *@counter: line_number
+  *Return: no return
  */
-void _rotl(stack_t **stack, unsigned int line_number)
+void f_rotl(stack_t **head,  __attribute__((unused)) unsigned int counter)
 {
-	stack_t *tmp = *stack, *last = *stack, *lastcp;
+	stack_t *tmp = *head, *aux;
 
-	(void) line_number;
-
-	if (!stack || !(*stack) || !(*stack)->next)
+	if (*head == NULL || (*head)->next == NULL)
+	{
 		return;
-
-	while (last->next)
-		last = last->next;
-
-	*stack = tmp->next;
-	(*stack)->prev = tmp->prev;
-
-	lastcp = last;
-
-	tmp->next = lastcp->next;
-	last->next = tmp;
-	tmp->prev = last;
-
-
+	}
+	aux = (*head)->next;
+	aux->prev = NULL;
+	while (tmp->next != NULL)
+	{
+		tmp = tmp->next;
+	}
+	tmp->next = *head;
+	(*head)->next = NULL;
+	(*head)->prev = tmp;
+	(*head) = aux;
 }
+
 /**
- * _rotr - rotates the stack to the bottom
- * of the stack.
- * @stack: Pointer to head of stack (or queue)
- * @line_number: Current line number
- *
- * Return: No Return
+  *f_rotr- rotates the stack to the bottom
+  *@head: stack head
+  *@counter: line_number
+  *Return: no return
  */
-void _rotr(stack_t **stack, unsigned int line_number)
+void f_rotr(stack_t **head, __attribute__((unused)) unsigned int counter)
 {
-	stack_t *tmp = *stack, *last = *stack, *prelast;
+	stack_t *copy;
 
-	(void) line_number;
-
-	if (!stack || !(*stack) || !(*stack)->next)
+	copy = *head;
+	if (*head == NULL || (*head)->next == NULL)
+	{
 		return;
-
-	while (last->next)
-		last = last->next;
-
-	prelast = last->prev;
-	prelast->next = last->next;
-
-	last->next = tmp;
-	last->prev = tmp->prev;
-	tmp->prev = last;
-
-	*stack = last;
+	}
+	while (copy->next)
+	{
+		copy = copy->next;
+	}
+	copy->next = *head;
+	copy->prev->next = NULL;
+	copy->prev = NULL;
+	(*head)->prev = copy;
+	(*head) = copy;
 }
