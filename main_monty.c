@@ -1,5 +1,24 @@
 #include "monty.h"
-bus_t bus = {NULL, NULL, NULL, 0};
+bus_t bus;
+void set_global(void);
+/**
+* free_stack - frees a doubly linked list
+* @head: head of the stack
+*/
+void free_stack(stack_t *head)
+{
+	stack_t *aux;
+
+	aux = head;
+	while (head)
+	{
+		aux = head->next;
+		free(head);
+		head = aux;
+	}
+}
+
+
 /**
 * main - monty code interpreter
 * @argc: number of arguments
@@ -22,6 +41,7 @@ int main(int argc, char *argv[])
 	}
 	file = fopen(argv[1], "r");
 	bus.file = file;
+	set_global();
 	if (!file)
 	{
 		fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
@@ -42,4 +62,17 @@ int main(int argc, char *argv[])
 	free_stack(stack);
 	fclose(file);
 return (0);
+}
+
+/**
+ * set_global - defines global variables
+ *
+ * Return: No return
+ */
+void set_global(void)
+{
+	bus.arg = NULL;
+	bus.file = NULL;
+	bus.content = NULL;
+	bus.lifi = 0;
 }
